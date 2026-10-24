@@ -1,0 +1,7 @@
+{
+  "task_id": "task-pytrade-phase2-part1",
+  "task_description": "PYTRADE Phase 2 Part 1: Build Auth+Onboarding flow, KYC+Banking wizard, and Markets+Trading UI on top of the existing Next.js 16 + Tailwind CSS v4 demo platform. Three sequential features: FEAT-001 (Auth/Onboarding), FEAT-002 (KYC/Banking), FEAT-003 (Markets/Trading). Each must leave the build passing before the next starts.",
+  "status": "pending",
+  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003"],
+  "blocked_reason": null
+}

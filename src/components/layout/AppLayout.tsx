@@ -37,7 +37,7 @@ export function AppLayout({ children }: AppLayoutProps) {
       />
 
       {/* Mobile bottom nav — hidden on desktop via CSS in component */}
-      <MobileBottomNavigation />
+      <MobileBottomNavigation onMoreOpen={() => setMobileMenuOpen(true)} />
 
       {/* Main content area */}
       <main

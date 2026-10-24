@@ -33,6 +33,7 @@ export const navItems: NavItem[] = [
   { id: 'settings', label: 'Settings', href: '/settings', icon: Settings, implemented: false },
 ];
 
+// Bottom nav: Home, Markets, Orders, Portfolio, Funds
 export const mobileBottomNavItems = navItems.filter((item) =>
-  ['home', 'markets', 'watchlist', 'orders', 'portfolio'].includes(item.id)
+  ['home', 'markets', 'orders', 'portfolio', 'funds'].includes(item.id)
 );

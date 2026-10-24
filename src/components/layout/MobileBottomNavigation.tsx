@@ -2,10 +2,15 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { MoreHorizontal } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { mobileBottomNavItems } from '@/config/navigation';
 
-export function MobileBottomNavigation() {
+interface MobileBottomNavigationProps {
+  onMoreOpen?: () => void;
+}
+
+export function MobileBottomNavigation({ onMoreOpen }: MobileBottomNavigationProps) {
   const pathname = usePathname();
 
   return (
@@ -15,6 +20,7 @@ export function MobileBottomNavigation() {
       style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom))' }}
     >
       <div className="flex items-stretch h-[60px]">
+        {/* Main nav items */}
         {mobileBottomNavItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -25,8 +31,7 @@ export function MobileBottomNavigation() {
             <div
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 py-1 text-[10px] font-medium transition-colors',
-                isActive ? 'text-pytrade-blue' : 'text-gray-500',
-                !item.implemented && 'opacity-50 pointer-events-none'
+                isActive ? 'text-pytrade-blue' : 'text-gray-500'
               )}
             >
               <Icon
@@ -36,19 +41,6 @@ export function MobileBottomNavigation() {
               <span>{item.label}</span>
             </div>
           );
-
-          if (!item.implemented) {
-            return (
-              <button
-                key={item.id}
-                className="flex-1 flex"
-                aria-disabled="true"
-                title="Coming Soon"
-              >
-                {content}
-              </button>
-            );
-          }
 
           return (
             <Link
@@ -61,6 +53,18 @@ export function MobileBottomNavigation() {
             </Link>
           );
         })}
+
+        {/* More button — opens the full nav drawer */}
+        <button
+          onClick={onMoreOpen}
+          className="flex-1 flex"
+          aria-label="More navigation options"
+        >
+          <div className="flex flex-col items-center justify-center gap-0.5 flex-1 py-1 text-[10px] font-medium text-gray-500 transition-colors hover:text-pytrade-navy">
+            <MoreHorizontal className="h-5 w-5" aria-hidden="true" />
+            <span>More</span>
+          </div>
+        </button>
       </div>
     </nav>
   );

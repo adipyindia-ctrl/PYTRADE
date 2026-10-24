@@ -1,0 +1,59 @@
+{
+  "id": "FEAT-001",
+  "type": "feat",
+  "description": "Auth infrastructure + complete onboarding flow. Install missing packages, wire up MongoDB and NextAuth v5 Credentials provider, create User and OtpChallenge models, implement API routes for signup/OTP/verify, create src/proxy.ts (NOT middleware.ts — Next.js 16 renamed it) to protect app routes, and build all onboarding pages: /welcome, /signup, /verify-otp, /set-password, /account-activated, /login.",
+  "status": "pending",
+  "steps": [
+    "1. Install dependencies: run `npm install next-auth@beta bcryptjs mongoose` and `npm install -D @types/bcryptjs` from c:\\Users\\DELL\\OneDrive\\Desktop\\PYTRADE",
+
+    "2. Create .env.local in the workspace root with: MONGODB_URI=mongodb+srv://palrahul95987_db_user:NwlGfKe6e8ozjUit@cluster0.ffd9e2p.mongodb.net/pytrade?retryWrites=true&w=majority, NEXTAUTH_SECRET=pytrade_super_secret_key_2025_change_in_prod, NEXTAUTH_URL=http://localhost:3000. Ensure .gitignore already has .env.local (check and add if missing).",
+
+    "3. Replace src/server/db/mongoose.ts stub with a real cached Mongoose connection that reads MONGODB_URI from process.env and caches the connection promise on a global to survive Next.js hot-reload. Pattern: declare `global._mongooseConn` cache, return cached promise if exists, else call mongoose.connect() and store promise. Export as `connectDB()` async function.",
+
+    "4. Create src/server/models/User.ts: IUser interface with fields name:string, email:string|undefined, mobile:string|undefined, passwordHash:string, kycStatus:'none'|'pending'|'verified', kycData:Record<string,unknown>|undefined, linkedBanks:string[], createdAt:Date. Mongoose schema + model with pre-save hook using bcryptjs to hash the raw `password` virtual field (never store plain text). Export the Mongoose model as default and the IUser interface as named export.",
+
+    "5. Create src/server/models/OtpChallenge.ts: IOtpChallenge interface with fields identifier:string (mobile or email), otpHash:string, expiresAt:Date (5 minutes from creation), attempts:number (max 3), used:boolean. Schema with TTL index on expiresAt (auto-expire). Export model. DEMO_OTP constant = '123456' — hash it at module level using bcryptjs.hashSync for comparison during verify.",
+
+    "6. Create src/server/auth.ts: NextAuth v5 beta configuration. Use Credentials provider with authorize() that looks up User by email OR mobile, calls bcryptjs.compare(password, user.passwordHash), returns { id, name, email } on success or null on failure. Export the handler and auth helpers (auth, signIn, signOut). Session strategy: 'jwt'. Include secret from process.env.NEXTAUTH_SECRET.",
+
+    "7. Create src/app/api/auth/[...nextauth]/route.ts: import handlers from src/server/auth.ts, export { GET, POST } = handlers.",
+
+    "8. Create src/app/api/auth/signup/route.ts (POST): validate body with zod (name required, either mobile or email required, password min 8 chars). Call connectDB(). Check for duplicate user. Create User with passwordHash = await bcryptjs.hash(password, 12). Return 201 with { success: true, userId }. Return 409 if duplicate. Return 400 for validation errors. Return 500 on server error. TypeScript strict — no `any`.",
+
+    "9. Create src/app/api/auth/send-otp/route.ts (POST): validate body (identifier: mobile or email). Call connectDB(). Delete any existing non-expired OTP for this identifier. DEMO MODE ONLY — generate OTP '123456', hash with bcryptjs.hash('123456', 10), store new OtpChallenge doc. Return 200 with { success: true, message: 'DEMO MODE: Use OTP 123456 to verify', demoOtp: '123456', expiresInMinutes: 5 }. NEVER actually send SMS or email. Include a comment: '// DEMO ONLY — integrate Twilio/MSG91 here for production'.",
+
+    "10. Create src/app/api/auth/verify-otp/route.ts (POST): validate body (identifier, otp string). Call connectDB(). Find OtpChallenge by identifier where used=false and expiresAt > now. If not found → 404. Increment attempts; if attempts >= 3 → mark used, return 429 with 'Too many attempts'. Call bcryptjs.compare(otp, challenge.otpHash). If mismatch → save incremented attempts, return 401 with remaining attempts count. If match → mark used=true, save, return 200 { success: true }. Limit: never return the OTP hash in any response.",
+
+    "11. Create src/proxy.ts in src/ (NOT middleware.ts — Next.js 16 renamed it; export function must be named `proxy`): check for next-auth session cookie. Protected routes: /dashboard, /kyc, /bank-accounts, /orders, /markets, /portfolio, /funds, /watchlist, /stocks. If no session cookie → NextResponse.redirect to /login. Matcher: exclude /api, /_next/static, /_next/image, /favicon.ico, /, /welcome, /signup, /verify-otp, /set-password, /account-activated, /login. Session detection: check for the next-auth session token cookie (name: 'authjs.session-token' or '__Secure-authjs.session-token' for HTTPS). Use next-auth session cookie name from next-auth/v5 — do NOT use JWT.verify() in proxy since it runs in the Edge runtime; just check cookie presence as a lightweight guard (real auth happens in server components/API routes).",
+
+    "12. Create src/app/welcome/page.tsx: standalone page (no AppLayout). PYTRADE logo (TrendingUp icon + PYTRADE text), 'Invest in Your Future' heading, 3-4 feature highlights with icons, 'Get Started' Button (primary, links to /signup), 'Already have an account? Login' link. Mobile: full-screen centered layout with gradient background. Desktop: centered panel max-w-md. No 'use client' needed (static page). Uses only Lucide icons and Next.js Link.",
+
+    "13. Create src/app/login/page.tsx: 'use client' page. Form with email/mobile field + password field using react-hook-form + zod. Submit calls signIn() from next-auth/react with credentials provider, redirects to /dashboard on success. Show error toast on failure. Link to /signup. Same visual style as welcome page (dark navy gradient or white card). No AppLayout.",
+
+    "14. Create src/app/signup/page.tsx: 'use client' page. Tabs: Mobile | Email. Mobile tab: country code +91 + 10-digit mobile field. Email tab: email field. Both tabs include: full name field, password field (with show/hide toggle), confirm password, terms checkbox. react-hook-form + zod validation. Submit: POST /api/auth/signup then POST /api/auth/send-otp, redirect to /verify-otp?identifier=<value>&type=mobile|email. Inline validation errors. Disable submit while loading. Loading state on button. Link to /login. No AppLayout.",
+
+    "15. Create src/app/verify-otp/page.tsx: 'use client' page. Reads identifier and type from useSearchParams(). Shows masked identifier. Six individual digit input boxes — auto-focus next on input, auto-focus prev on backspace, paste handler splits 6 digits across boxes. Resend OTP button with 60-second countdown. Verify button: POST /api/auth/verify-otp → on success redirect to /set-password?identifier=<value>. Loading, success, error states. Clear DEMO MODE banner: 'Demo Mode: Enter 123456 to verify'. No AppLayout.",
+
+    "16. Create src/app/set-password/page.tsx: 'use client' page. Reads identifier from useSearchParams() — only used for display, password already set during signup so this page is about setting the trading PIN. Show heading 'Set Your Trading PIN'. Six-digit PIN entry (2 inputs of 6 digits each: Enter PIN + Confirm PIN using digit-box pattern from verify-otp). Password strength indicator if a new-password field is shown (optional — show if identifier suggests new account). On continue: validate PIN match, store PIN in component state only (NEVER persist), redirect to /account-activated. Show 'PIN stored in session memory only' disclaimer. No AppLayout.",
+
+    "17. Create src/app/account-activated/page.tsx: static-ish 'use client' page (for Link). Success checkmark icon (CheckCircle, green). 'Your Account is Ready!' heading. Summary: 'Demo account created. No real Demat or brokerage account has been opened.' Two buttons: 'Go to Dashboard' (→ /dashboard) and 'Complete KYC' (→ /kyc). No AppLayout."
+  ],
+  "acceptance_criteria": [
+    "`npm run build` completes with 0 TypeScript errors after all steps",
+    "Routes /welcome, /signup, /verify-otp, /set-password, /account-activated, /login all render without errors",
+    "/dashboard redirects to /login when no session cookie is present (proxy.ts protecting it)",
+    "POST /api/auth/signup returns 201 with a real MongoDB document created (verified via build, not runtime test)",
+    "POST /api/auth/send-otp returns demoOtp: '123456' — never sends real SMS",
+    "POST /api/auth/verify-otp accepts '123456', rejects arbitrary OTPs, expires after 5 min, limits to 3 attempts",
+    "No plain-text passwords anywhere in models, API responses, or logs",
+    "src/proxy.ts exports `proxy` function (not `middleware`) and uses `config.matcher` — build does not warn about deprecated middleware.ts"
+  ],
+  "verification": [
+    "cd c:\\Users\\DELL\\OneDrive\\Desktop\\PYTRADE && npm run build",
+    "Confirm build output lists routes: /welcome, /signup, /verify-otp, /set-password, /account-activated, /login",
+    "Confirm build output does NOT include warnings about deprecated middleware.ts",
+    "Confirm 0 TypeScript errors in build output"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
