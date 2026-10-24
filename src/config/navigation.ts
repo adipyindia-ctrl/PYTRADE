@@ -22,9 +22,9 @@ export interface NavItem {
 
 export const navItems: NavItem[] = [
   { id: 'home', label: 'Home', href: '/dashboard', icon: Home, implemented: true },
-  { id: 'markets', label: 'Markets', href: '/markets', icon: BarChart2, implemented: false },
-  { id: 'watchlist', label: 'Watchlist', href: '/watchlist', icon: BookOpen, implemented: false },
-  { id: 'orders', label: 'Orders', href: '/orders', icon: ClipboardList, implemented: false },
+  { id: 'markets', label: 'Markets', href: '/markets', icon: BarChart2, implemented: true },
+  { id: 'watchlist', label: 'Watchlist', href: '/watchlist', icon: BookOpen, implemented: true },
+  { id: 'orders', label: 'Orders', href: '/orders', icon: ClipboardList, implemented: true },
   { id: 'portfolio', label: 'Portfolio', href: '/portfolio', icon: PieChart, implemented: false },
   { id: 'funds', label: 'Funds', href: '/funds', icon: Wallet, implemented: false },
   { id: 'ipo', label: 'IPO', href: '/ipo', icon: TrendingUp, implemented: false },
