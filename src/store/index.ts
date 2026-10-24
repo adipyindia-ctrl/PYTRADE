@@ -4,6 +4,8 @@ import watchlistReducer from './watchlistSlice';
 import bankReducer from './bankSlice';
 import ordersReducer from './ordersSlice';
 import fundsReducer from './fundsSlice';
+import ipoReducer from './ipoSlice';
+import priceAlertReducer from './priceAlertSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +13,8 @@ export const store = configureStore({
     bank: bankReducer,
     orders: ordersReducer,
     funds: fundsReducer,
+    ipo: ipoReducer,
+    priceAlerts: priceAlertReducer,
   },
 });
 

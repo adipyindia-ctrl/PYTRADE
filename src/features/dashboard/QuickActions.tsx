@@ -133,7 +133,6 @@ function FundsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
 export function QuickActions() {
   const [buyOpen, setBuyOpen] = useState(false);
   const [sellOpen, setSellOpen] = useState(false);
-  const [fundsOpen, setFundsOpen] = useState(false);
 
   return (
     <DashboardCard title="Quick Actions">
@@ -157,16 +156,18 @@ export function QuickActions() {
           <TrendingDown className="h-4 w-4" aria-hidden="true" />
           Sell
         </Button>
-        <Button
-          variant="secondary"
-          className="flex-col sm:flex-row h-14 sm:h-auto gap-1 sm:gap-2 text-xs sm:text-sm"
-          onClick={() => setFundsOpen(true)}
-          aria-label="Open add funds modal"
-        >
-          <Wallet className="h-4 w-4" aria-hidden="true" />
-          Add Funds
-        </Button>
-        <Link href="/dashboard" className="w-full">
+        <Link href="/funds/add" className="w-full">
+          <Button
+            variant="secondary"
+            fullWidth
+            className="flex-col sm:flex-row h-14 sm:h-auto gap-1 sm:gap-2 text-xs sm:text-sm"
+            aria-label="Add funds"
+          >
+            <Wallet className="h-4 w-4" aria-hidden="true" />
+            Add Funds
+          </Button>
+        </Link>
+        <Link href="/portfolio" className="w-full">
           <Button
             variant="ghost"
             fullWidth
@@ -181,7 +182,6 @@ export function QuickActions() {
 
       <TradeModal isOpen={buyOpen} onClose={() => setBuyOpen(false)} side="BUY" />
       <TradeModal isOpen={sellOpen} onClose={() => setSellOpen(false)} side="SELL" />
-      <FundsModal isOpen={fundsOpen} onClose={() => setFundsOpen(false)} />
     </DashboardCard>
   );
 }

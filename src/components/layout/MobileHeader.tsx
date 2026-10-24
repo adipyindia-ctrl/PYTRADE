@@ -2,6 +2,7 @@
 
 import { Search, Bell, User } from 'lucide-react';
 import { TrendingUp } from 'lucide-react';
+import Link from 'next/link';
 
 export interface MobileHeaderProps {
   onMenuOpen?: () => void;
@@ -43,14 +44,15 @@ export function MobileHeader({ onMenuOpen }: MobileHeaderProps) {
             <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full border-2 border-white" aria-hidden="true" />
           </button>
 
-          <button
+          <Link
+            href="/profile"
             className="p-1.5 text-gray-500 hover:text-pytrade-navy rounded-lg transition-colors"
             aria-label="Profile"
           >
             <div className="h-7 w-7 bg-pytrade-blue rounded-full flex items-center justify-center">
               <User className="h-4 w-4 text-white" />
             </div>
-          </button>
+          </Link>
         </div>
       </div>
     </header>

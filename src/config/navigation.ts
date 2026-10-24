@@ -27,7 +27,7 @@ export const navItems: NavItem[] = [
   { id: 'orders', label: 'Orders', href: '/orders', icon: ClipboardList, implemented: true },
   { id: 'portfolio', label: 'Portfolio', href: '/portfolio', icon: PieChart, implemented: true },
   { id: 'funds', label: 'Funds', href: '/funds', icon: Wallet, implemented: true },
-  { id: 'ipo', label: 'IPO', href: '/ipo', icon: TrendingUp, implemented: false },
+  { id: 'ipo', label: 'IPO', href: '/ipo', icon: TrendingUp, implemented: true },
   { id: 'reports', label: 'Reports', href: '/reports', icon: FileText, implemented: false },
   { id: 'learn', label: 'Learn', href: '/learn', icon: GraduationCap, implemented: false },
   { id: 'settings', label: 'Settings', href: '/settings', icon: Settings, implemented: false },

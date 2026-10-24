@@ -1,6 +1,7 @@
 'use client';
 
 import { Bell, User } from 'lucide-react';
+import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { GlobalStockSearch } from './GlobalStockSearch';
 
@@ -34,14 +35,15 @@ export function DesktopHeader({ sidebarCollapsed }: DesktopHeaderProps) {
             <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full border-2 border-white" aria-hidden="true" />
           </button>
 
-          <button
+          <Link
+            href="/profile"
             className="flex items-center gap-2 p-1.5 text-gray-600 hover:text-pytrade-navy hover:bg-gray-100 rounded-lg transition-colors"
             aria-label="Profile"
           >
             <div className="h-7 w-7 bg-pytrade-blue rounded-full flex items-center justify-center">
               <User className="h-4 w-4 text-white" />
             </div>
-          </button>
+          </Link>
         </div>
       </div>
     </header>
