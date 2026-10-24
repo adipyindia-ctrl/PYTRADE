@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import watchlistReducer from './watchlistSlice';
 import bankReducer from './bankSlice';
 import ordersReducer from './ordersSlice';
+import fundsReducer from './fundsSlice';
 
 export const store = configureStore({
   reducer: {
     watchlist: watchlistReducer,
     bank: bankReducer,
     orders: ordersReducer,
+    funds: fundsReducer,
   },
 });
 
