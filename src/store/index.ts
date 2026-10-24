@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector } from 'react-redux';
 import watchlistReducer from './watchlistSlice';
+import bankReducer from './bankSlice';
 
 export const store = configureStore({
   reducer: {
     watchlist: watchlistReducer,
+    bank: bankReducer,
   },
 });
 
